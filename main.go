@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -33,34 +32,6 @@ func NewS3FS(bucketName, prefix string) *S3FS {
 		bucketName: bucketName,
 		prefix:     prefix,
 	}
-}
-
-// s3FileInfo implements os.FileInfo
-type s3FileInfo struct {
-	name    string
-	size    int64
-	mode    os.FileMode
-	modTime time.Time
-}
-
-func (fi s3FileInfo) Name() string {
-	return fi.name
-}
-
-func (fi s3FileInfo) Size() int64 {
-	return fi.size
-}
-
-func (fi s3FileInfo) Mode() os.FileMode {
-	return fi.mode
-}
-
-func (fi s3FileInfo) IsDir() bool {
-	return fi.mode.IsDir()
-}
-
-func (fi s3FileInfo) Sys() interface{} {
-	return nil
 }
 
 func main() {

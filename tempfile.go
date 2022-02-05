@@ -12,6 +12,6 @@ import "github.com/go-git/go-billy/v5"
 // same file. The caller can use f.Name() to find the pathname of the file.
 // It is the caller's responsibility to remove the file when no longer
 // needed.
-func (fi s3FileInfo) TempFile(dir, prefix string) (billy.File, error) {
+func (fs *S3FS) TempFile(dir, prefix string) (billy.File, error) {
 	return nil, nil
 }
