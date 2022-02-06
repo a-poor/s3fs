@@ -8,6 +8,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.24.1
 	github.com/go-git/go-billy/v5 v5.3.1
 	github.com/joho/godotenv v1.4.0
+	go.uber.org/atomic v1.9.0
 )
 
 require (
