@@ -13,9 +13,9 @@ func (fs *S3FS) Chroot(path string) (billy.Filesystem, error) {
 
 	// Create the new S3FS with the new root directory
 	nfs := &S3FS{
-		client:     fs.client,
-		bucketName: fs.bucketName,
-		root:       path,
+		client: fs.client,
+		bucket: fs.bucket,
+		root:   path,
 	}
 	return nfs, nil
 }

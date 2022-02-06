@@ -3,7 +3,7 @@
 package main
 
 import (
-	"fmt"
+	"errors"
 	"os"
 	"path"
 
@@ -19,7 +19,7 @@ const (
 )
 
 var (
-	ErrOpenFlagNotSupported = fmt.Errorf("open flag not supported")
+	ErrOpenFlagNotSupported = errors.New("open flag not supported")
 )
 
 // Create implements billy.Basic
@@ -42,7 +42,27 @@ func (fs *S3FS) Open(filename string) (billy.File, error) {
 // perm, (0666 etc.) if applicable. If successful, methods on the returned
 // File can be used for I/O.
 func (fs *S3FS) OpenFile(filename string, flag int, perm os.FileMode) (billy.File, error) {
-	return nil, nil
+	// Is the supplied flag supported?
+	if flag&SupportedOFlags != flag {
+		return nil, errors.New("unsupported open flag")
+	}
+
+	// Get the file path
+	p := fs.Join(fs.root, filename)
+
+	switch flag & SupportedOFlags {
+	case O_RDONLY:
+		return newS3ReadFile(fs.client, fs.bucket, p)
+
+	case O_WRONLY:
+		return newS3WriteFile(fs.client, fs.bucket, p)
+
+	case O_WRMULTIPART:
+		return newS3MultipartUploadFile(fs.client, fs.bucket, p)
+
+	default:
+		return nil, errors.New("unsupported open flag")
+	}
 }
 
 // Stat returns a FileInfo describing the named file.
