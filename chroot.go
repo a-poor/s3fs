@@ -8,7 +8,16 @@ import "github.com/go-git/go-billy/v5"
 // the given path. Files outside of the designated directory tree cannot be
 // accessed.
 func (fs *S3FS) Chroot(path string) (billy.Filesystem, error) {
-	return nil, nil
+	// TODO: Check that path is a valid subdirectory of the current root
+	// ...
+
+	// Create the new S3FS with the new root directory
+	nfs := &S3FS{
+		client:     fs.client,
+		bucketName: fs.bucketName,
+		root:       path,
+	}
+	return nfs, nil
 }
 
 // Root returns the root path of the filesystem.
