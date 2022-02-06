@@ -3,10 +3,23 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"path"
 
 	"github.com/go-git/go-billy/v5"
+)
+
+const (
+	O_RDONLY      int = os.O_RDONLY // open the file read-only.
+	O_WRONLY      int = os.O_WRONLY // open the file write-only.
+	O_WRMULTIPART int = 0x4         // open the file for write-only using multipart upload.
+
+	SupportedOFlags = O_RDONLY | O_WRONLY | O_WRMULTIPART // supported open flags for s3fs
+)
+
+var (
+	ErrOpenFlagNotSupported = fmt.Errorf("open flag not supported")
 )
 
 // Create implements billy.Basic

@@ -7,13 +7,19 @@ import (
 	"github.com/go-git/go-billy/v5"
 )
 
+const (
+	DefaultSeparator = "/"
+)
+
 type S3FS struct {
 	client     *s3.Client
 	bucketName string
 	root       string
+	separator  string
 }
 
-func NewS3FS(client *s3.Client, bucketName string) (*S3FS, error) {
+// NewS3FS creates a new S3FS Filesystem.
+func NewS3FS(client *s3.Client, bucketName string) (billy.Filesystem, error) {
 	// Check for a non-nil client
 	if client == nil {
 		return nil, fmt.Errorf("s3 client cannot be nil")
@@ -22,6 +28,21 @@ func NewS3FS(client *s3.Client, bucketName string) (*S3FS, error) {
 		client:     client,
 		bucketName: bucketName,
 		root:       "",
+		separator:  DefaultSeparator,
+	}, nil
+}
+
+// NewS3FSWithSeparator creates a new S3FS with the given separator.
+func NewS3FSWithCustomSeparator(client *s3.Client, bucketName, separator string) (billy.Filesystem, error) {
+	// Check for a non-nil client
+	if client == nil {
+		return nil, fmt.Errorf("s3 client cannot be nil")
+	}
+	return &S3FS{
+		client:     client,
+		bucketName: bucketName,
+		root:       "",
+		separator:  separator,
 	}, nil
 }
 
