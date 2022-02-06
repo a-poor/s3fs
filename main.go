@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -22,20 +21,22 @@ func init() {
 	BucketName = os.Getenv("BUCKET_NAME")
 }
 
-type S3FS struct {
-	bucketName string
-	prefix     string
+type myfile struct {
 }
 
-func NewS3FS(bucketName, prefix string) *S3FS {
-	return &S3FS{
-		bucketName: bucketName,
-		prefix:     prefix,
-	}
+func openMyFile() (*myfile, error) {
+	return &myfile{}, nil
+}
+
+func (mf *myfile) Write(p []byte) (n int, err error) {
+	return 0, nil
+}
+
+func (mf *myfile) Close() error {
+	return nil
 }
 
 func main() {
-	fmt.Println("Hello, world!")
 	fmt.Println(BucketName)
 
 	cfg, err := config.LoadDefaultConfig(context.Background())
@@ -44,31 +45,33 @@ func main() {
 	}
 
 	client := s3.NewFromConfig(cfg)
-	// manager := manager.NewDownloader(client)
 
-	paginator := s3.NewListObjectsV2Paginator(client, &s3.ListObjectsV2Input{
-		Bucket: &BucketName,
-		// Prefix: aws.String(""),
-		Delimiter: aws.String("/"),
-	})
+	get, err := client.ListObjectsV2(
+		context.Background(),
+		&s3.ListObjectsV2Input{
+			Bucket:    &BucketName,
+			Delimiter: aws.String("/"),
+		},
+	)
+	if err != nil {
+		panic(err)
+	}
+	for _, d := range get.CommonPrefixes {
+		fmt.Println(aws.ToString(d.Prefix))
+	}
+	for _, f := range get.Contents {
+		fmt.Println(aws.ToString(f.Key))
+	}
 
-	for p := 0; paginator.HasMorePages(); p++ {
-		page, err := paginator.NextPage(context.TODO())
-		if err != nil {
-			log.Fatalln("error:", err)
-		}
-		// fmt.Printf("Page: %+v\n", page)
-
-		fmt.Println("Listing prefixes...")
-		for _, pre := range page.CommonPrefixes {
-			fmt.Println(aws.ToString(pre.Prefix))
-		}
-
-		fmt.Println("Listing objects...")
-		for i, obj := range page.Contents {
-			fmt.Printf("[%2d] Page: %d, Bucket: %q, Key: %q\n", i, p, BucketName, aws.ToString(obj.Key))
-			// fmt.Printf("%+v\n", obj)
-		}
+	_, err = client.PutObject(
+		context.Background(),
+		&s3.PutObjectInput{
+			Bucket: &BucketName,
+			Key:    aws.String("hello/"),
+		},
+	)
+	if err != nil {
+		panic(err)
 	}
 
 }

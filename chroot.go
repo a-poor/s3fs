@@ -13,5 +13,5 @@ func (fs *S3FS) Chroot(path string) (billy.Filesystem, error) {
 
 // Root returns the root path of the filesystem.
 func (fs *S3FS) Root() string {
-	return ""
+	return fs.root
 }

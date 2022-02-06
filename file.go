@@ -2,21 +2,29 @@ package main
 
 import (
 	"errors"
-	"os"
-	"time"
+
+	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"go.uber.org/atomic"
 )
 
 var (
-	ErrLockNotSupported = errors.New("lock not supported by s3")
+	ErrLockNotSupported     = errors.New("lock not supported by s3")
+	ErrTruncateNotSupported = errors.New("truncate not supported by s3")
+	ErrFileClosed           = errors.New("file is closed")
 )
 
 // s3File implements billy.File
 type s3File struct {
+	client  *s3.Client    // s3 skd client
+	bucket  string        // S3 bucket name
+	key     string        // Object key / filename
+	closed  atomic.Bool   // Is the file closed?
+	nWrites atomic.Uint64 // Tracks the number of writes
 }
 
 // Name returns the name of the file as presented to Open.
 func (f *s3File) Name() string {
-	return ""
+	return f.key
 }
 
 // Write implements os.Writer for billy.File
@@ -57,33 +65,5 @@ func (f *s3File) Unlock() error {
 
 // Truncate the file.
 func (f *s3File) Truncate(size int64) error {
-	return nil
-}
-
-// s3FileInfo implements os.FileInfo
-type s3FileInfo struct {
-	name    string
-	size    int64
-	mode    os.FileMode
-	modTime time.Time
-}
-
-func (fi s3FileInfo) Name() string {
-	return fi.name
-}
-
-func (fi s3FileInfo) Size() int64 {
-	return fi.size
-}
-
-func (fi s3FileInfo) Mode() os.FileMode {
-	return fi.mode
-}
-
-func (fi s3FileInfo) IsDir() bool {
-	return fi.mode.IsDir()
-}
-
-func (fi s3FileInfo) Sys() interface{} {
-	return nil
+	return ErrTruncateNotSupported
 }

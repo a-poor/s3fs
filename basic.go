@@ -4,6 +4,7 @@ package main
 
 import (
 	"os"
+	"path"
 
 	"github.com/go-git/go-billy/v5"
 )
@@ -48,10 +49,9 @@ func (fs *S3FS) Remove(filename string) error {
 	return nil
 }
 
-// Join joins any number of path elements into a single path, adding a
-// Separator if necessary. Join calls filepath.Clean on the result; in
-// particular, all empty strings are ignored. On Windows, the result is a
-// UNC path if and only if the first path element is a UNC path.
+// Join joins any number of path elements into a single path
 func (fs *S3FS) Join(elem ...string) string {
-	return ""
+	j := path.Join(elem...)
+	c := path.Clean(j)
+	return c
 }
