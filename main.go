@@ -21,21 +21,6 @@ func init() {
 	BucketName = os.Getenv("BUCKET_NAME")
 }
 
-type myfile struct {
-}
-
-func openMyFile() (*myfile, error) {
-	return &myfile{}, nil
-}
-
-func (mf *myfile) Write(p []byte) (n int, err error) {
-	return 0, nil
-}
-
-func (mf *myfile) Close() error {
-	return nil
-}
-
 func main() {
 	fmt.Println(BucketName)
 
