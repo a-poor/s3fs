@@ -59,4 +59,10 @@ func main() {
 		panic(err)
 	}
 
+	s3fs, err := NewS3FS(client, BucketName)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("s3fs.Root() = %q\n", s3fs.Root())
+
 }

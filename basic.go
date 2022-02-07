@@ -26,39 +26,39 @@ var (
 // Create creates the named file with mode 0666 (before umask), truncating
 // it if it already exists. If successful, methods on the returned File can
 // be used for I/O; the associated file descriptor has mode O_RDWR.
-func (fs *S3FS) Create(filename string) (billy.File, error) {
-	return nil, nil
+func (fs3 *S3FS) Create(filename string) (billy.File, error) {
+	return fs3.OpenFile(filename, O_WRONLY, 0666)
 }
 
 // Open opens the named file for reading. If successful, methods on the
 // returned file can be used for reading; the associated file descriptor has
 // mode O_RDONLY.
-func (fs *S3FS) Open(filename string) (billy.File, error) {
-	return nil, nil
+func (fs3 *S3FS) Open(filename string) (billy.File, error) {
+	return fs3.OpenFile(filename, O_RDONLY, 0666)
 }
 
 // OpenFile is the generalized open call; most users will use Open or Create
 // instead. It opens the named file with specified flag (O_RDONLY etc.) and
 // perm, (0666 etc.) if applicable. If successful, methods on the returned
 // File can be used for I/O.
-func (fs *S3FS) OpenFile(filename string, flag int, perm os.FileMode) (billy.File, error) {
+func (fs3 *S3FS) OpenFile(filename string, flag int, perm os.FileMode) (billy.File, error) {
 	// Is the supplied flag supported?
 	if flag&SupportedOFlags != flag {
 		return nil, errors.New("unsupported open flag")
 	}
 
 	// Get the file path
-	p := fs.Join(fs.root, filename)
+	p := path.Join(fs3.root, filename)
 
 	switch flag & SupportedOFlags {
 	case O_RDONLY:
-		return newS3ReadFile(fs.client, fs.bucket, p)
+		return newS3ReadFile(fs3.client, fs3.bucket, p)
 
 	case O_WRONLY:
-		return newS3WriteFile(fs.client, fs.bucket, p)
+		return newS3WriteFile(fs3.client, fs3.bucket, p)
 
 	case O_WRMULTIPART:
-		return newS3MultipartUploadFile(fs.client, fs.bucket, p)
+		return newS3MultipartUploadFile(fs3.client, fs3.bucket, p)
 
 	default:
 		return nil, errors.New("unsupported open flag")
@@ -66,24 +66,25 @@ func (fs *S3FS) OpenFile(filename string, flag int, perm os.FileMode) (billy.Fil
 }
 
 // Stat returns a FileInfo describing the named file.
-func (fs *S3FS) Stat(filename string) (os.FileInfo, error) {
-	return nil, nil
+func (fs3 *S3FS) Stat(filename string) (os.FileInfo, error) {
+	return nil, errors.New("not implemented")
 }
 
 // Rename renames (moves) oldpath to newpath. If newpath already exists and
 // is not a directory, Rename replaces it. OS-specific restrictions may
 // apply when oldpath and newpath are in different directories.
-func (fs *S3FS) Rename(oldpath, newpath string) error {
-	return nil
+func (fs3 *S3FS) Rename(oldpath, newpath string) error {
+	return errors.New("not implemented")
 }
 
 // Remove removes the named file or directory.
-func (fs *S3FS) Remove(filename string) error {
-	return nil
+func (fs3 *S3FS) Remove(filename string) error {
+
+	return errors.New("not implemented")
 }
 
 // Join joins any number of path elements into a single path
-func (fs *S3FS) Join(elem ...string) string {
+func (fs3 *S3FS) Join(elem ...string) string {
 	j := path.Join(elem...)
 	c := path.Clean(j)
 	return c

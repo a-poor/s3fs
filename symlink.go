@@ -17,7 +17,7 @@ var (
 //
 // NOTE: Lstat is not supported by s3. It always returns an error.
 // (This may be revised in the future.)
-func (fs *S3FS) Lstat(filename string) (os.FileInfo, error) {
+func (fs3 *S3FS) Lstat(filename string) (os.FileInfo, error) {
 	return nil, ErrSymLinkNotSupported
 }
 
@@ -26,7 +26,7 @@ func (fs *S3FS) Lstat(filename string) (os.FileInfo, error) {
 // Parent directories of link are created as necessary.
 //
 // NOTE: Symlink is not supported by s3. It always returns an error.
-func (fs *S3FS) Symlink(target, link string) error {
+func (fs3 *S3FS) Symlink(target, link string) error {
 	return ErrSymLinkNotSupported
 }
 
@@ -34,6 +34,6 @@ func (fs *S3FS) Symlink(target, link string) error {
 //
 // NOTE: Readlink is not supported by s3. It always returns an error.
 // (This may be revised in the future.)
-func (fs *S3FS) Readlink(link string) (string, error) {
+func (fs3 *S3FS) Readlink(link string) (string, error) {
 	return "", ErrSymLinkNotSupported
 }

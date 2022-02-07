@@ -6,7 +6,7 @@ import "os"
 
 // ReadDir reads the directory named by dirname and returns a list of
 // directory entries sorted by filename.
-func (fs *S3FS) ReadDir(path string) ([]os.FileInfo, error) {
+func (fs3 *S3FS) ReadDir(path string) ([]os.FileInfo, error) {
 	return nil, nil
 }
 
@@ -14,6 +14,6 @@ func (fs *S3FS) ReadDir(path string) ([]os.FileInfo, error) {
 // parents, and returns nil, or else returns an error. The permission bits
 // perm are used for all directories that MkdirAll creates. If path is/
 // already a directory, MkdirAll does nothing and returns nil.
-func (fs *S3FS) MkdirAll(filename string, perm os.FileMode) error {
+func (fs3 *S3FS) MkdirAll(filename string, perm os.FileMode) error {
 	return nil
 }

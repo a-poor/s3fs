@@ -32,21 +32,11 @@ func NewS3FS(client *s3.Client, bucket string) (billy.Filesystem, error) {
 	}, nil
 }
 
-// NewS3FSWithSeparator creates a new S3FS with the given separator.
-func NewS3FSWithCustomSeparator(client *s3.Client, bucket, separator string) (billy.Filesystem, error) {
-	// Check for a non-nil client
-	if client == nil {
-		return nil, fmt.Errorf("s3 client cannot be nil")
-	}
-	return &S3FS{
-		client:    client,
-		bucket:    bucket,
-		root:      "",
-		separator: separator,
-	}, nil
+// Capabilities returns the filesystem capabilities.
+func (fs3 *S3FS) Capabilities() billy.Capability {
+	return billy.ReadCapability | billy.WriteCapability
 }
 
-// Capabilities returns the filesystem capabilities.
-func (fs *S3FS) Capabilities() billy.Capability {
-	return billy.ReadCapability | billy.WriteCapability
+func (fs3 *S3FS) makeDir(path string) error {
+	return nil
 }
