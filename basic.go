@@ -3,10 +3,13 @@
 package main
 
 import (
+	"context"
 	"errors"
+	"fmt"
 	"os"
 	"path"
 
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/go-git/go-billy/v5"
 )
 
@@ -74,13 +77,59 @@ func (fs3 *S3FS) Stat(filename string) (os.FileInfo, error) {
 // is not a directory, Rename replaces it. OS-specific restrictions may
 // apply when oldpath and newpath are in different directories.
 func (fs3 *S3FS) Rename(oldpath, newpath string) error {
-	return errors.New("not implemented")
+	// TODO: Validate the paths?
+
+	// Create a context
+	ctx := context.TODO() // TODO: Get user-supplied context?
+
+	// Format the paths
+	src := path.Join(fs3.root, oldpath)
+	dst := path.Join(fs3.root, newpath)
+
+	// Send the copy request
+	_, err := fs3.client.CopyObject(ctx, &s3.CopyObjectInput{
+		Bucket:     &fs3.bucket,
+		CopySource: &src,
+		Key:        &dst,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to rename file: %s", err)
+	}
+
+	// Delete the old file
+	// TODO: Parse the response?
+	_, err = fs3.client.DeleteObject(ctx, &s3.DeleteObjectInput{
+		Bucket: &fs3.bucket,
+		Key:    &src,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to remove file: %s", err)
+	}
+
+	return nil
 }
 
 // Remove removes the named file or directory.
 func (fs3 *S3FS) Remove(filename string) error {
+	// TODO: Validate the path?
+	// ...
 
-	return errors.New("not implemented")
+	// Create a context
+	ctx := context.TODO() // TODO: Get user-supplied context?
+
+	// Format the path
+	p := path.Join(fs3.root, filename)
+
+	// Send the request
+	// TODO: Parse the response?
+	_, err := fs3.client.DeleteObject(ctx, &s3.DeleteObjectInput{
+		Bucket: &fs3.bucket,
+		Key:    &p,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to remove file: %s", err)
+	}
+	return nil
 }
 
 // Join joins any number of path elements into a single path

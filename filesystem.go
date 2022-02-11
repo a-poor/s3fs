@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"path"
 
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/go-git/go-billy/v5"
@@ -37,6 +38,16 @@ func (fs3 *S3FS) Capabilities() billy.Capability {
 	return billy.ReadCapability | billy.WriteCapability
 }
 
-func (fs3 *S3FS) makeDir(path string) error {
-	return nil
+func (fs3 *S3FS) cleanPath(p ...string) string {
+	// Join the path elements
+	j := path.Join(p...)
+
+	// Clean the path before joining to root
+	c := path.Clean(j)
+
+	// Join the root and cleaned path
+	f := path.Join(fs3.root, c)
+
+	// Return the full path
+	return path.Clean(f)
 }
